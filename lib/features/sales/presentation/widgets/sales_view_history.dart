@@ -38,7 +38,6 @@ class _SaleItemViewHistoryState extends State<SaleItemViewHistory> {
       token: AuthController.accessToken,
     );
     if (response.isSuccess) {
-      // _saleorderList.clear();
       final responseData = response.responseData;
 
       // 1. Sale Map for object

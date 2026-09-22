@@ -33,11 +33,16 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
   final _totalwightkgController = TextEditingController();
   final _customerNIDController = TextEditingController();
   final _ownerNameController = TextEditingController();
+  final _cashCustomerNameController = TextEditingController();
+  final _cashCustomerContractController = TextEditingController();
+  final _salebyController = TextEditingController();
+
   // new
 
   final _invoiceNoController = TextEditingController();
   final _orderdateController = TextEditingController();
   final _deliverydateController = TextEditingController();
+  final _factoryLeaveDateController = TextEditingController();
   final _paymentmodeController = TextEditingController();
   final _customerController = TextEditingController();
   final _salesbyController = TextEditingController();
@@ -67,7 +72,9 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool showShortCreditField = false; // ফিল্ড দেখানো বা হাইড করার জন্য
+  bool showShortCreditField = false;
+  bool showCashCustomerNameContractField = false;
+  // bool showCashCustomerContactNoField = false;
 
   List<Map<String, String>> salesList = [];
   bool inprogressssalesorderentry = false;
@@ -205,6 +212,10 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
   ];
   String? selectedPaymentMood;
 
+  // static list of customer type
+  final List<String> _customerTypeList = ["Cash Customer", "Regular Customer"];
+  String? selectedCustomerType;
+
   final List<String> collectionModes = [
     'due',
     'cash',
@@ -256,147 +267,580 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
             child: Column(
               children: [
                 /// start
-                TextFormField(
-                  controller: _orderdateController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    isDense: true,
+                ///
+                if (isFieldActive('sale_date')) ...[
+                  TextFormField(
+                    controller: _orderdateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      isDense: true,
 
-                    hintText: "Order Date",
-                    suffixIcon: const Icon(Icons.calendar_today_outlined),
-                    labelText: "Order Date",
-                    filled: true,
-                    fillColor: Colors.white,
+                      hintText: "Order Date",
+                      suffixIcon: const Icon(Icons.calendar_today_outlined),
+                      labelText: "Order Date",
+                      filled: true,
+                      fillColor: Colors.white,
 
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
 
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
 
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      if (pickedDate != null) {
+                        String formattedDate = DateFormat(
+                          'dd-MM-yyyy',
+                        ).format(pickedDate);
+
+                        _orderdateController.text = formattedDate;
+                      }
+                    },
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select a visit date";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
+                if (isFieldActive('factory_leave_date')) ...[
+                  TextFormField(
+                    controller: _factoryLeaveDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+
+                      hintText: "Factory Leave Date",
+                      labelText: "Factory Leave Date",
+                      suffixIcon: const Icon(Icons.calendar_today_outlined),
+                      filled: true,
+                      fillColor: Colors.white,
+
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
 
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      if (pickedDate != null) {
+                        String formattedDate = DateFormat(
+                          'dd-MM-yyyy',
+                        ).format(pickedDate);
+
+                        _deliverydateController.text = formattedDate;
+                      }
+                    },
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select a factory leave date";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                if (isFieldActive('receive_date')) ...[
+                  TextFormField(
+                    controller: _deliverydateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+
+                      hintText: "Delivery Date",
+                      labelText: "Delivery Date",
+                      suffixIcon: const Icon(Icons.calendar_today_outlined),
+                      filled: true,
+                      fillColor: Colors.white,
+
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
 
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      if (pickedDate != null) {
+                        String formattedDate = DateFormat(
+                          'dd-MM-yyyy',
+                        ).format(pickedDate);
+
+                        _deliverydateController.text = formattedDate;
+                      }
+                    },
+
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please select a delivery date";
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
+                if (isFieldActive('party_id')) ...[
+                  DropdownSearch<ClientTypeModel>(
+                    items: _clientNameList,
+                    itemAsString: (ClientTypeModel t) => t.name.toString(),
+                    selectedItem: selectedClient,
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      showSelectedItems: false,
+                    ),
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        isDense: true,
+
+                        hintText: "Select Customer",
+                        labelText: "Customer",
+                        filled: true,
+                        fillColor: Colors.white,
+
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    onChanged: (ClientTypeModel? client) async {
+                      if (client != null) {
+                        setState(() {
+                          selectedClient = client;
+                        });
+                        await _fetchCustomerDetailsList(
+                          client.clientid.toString(),
+                        );
+                        if (selectedCustomerDetails != null) {
+                          setState(() {
+                            _addressController.text =
+                                selectedCustomerDetails!.presentAddress ??
+                                "No Address Found";
+                            _grossdiscountController.text =
+                                selectedCustomerDetails!.discount.toString();
+                          });
+                        }
+                      }
+                    },
+                    validator: (ClientTypeModel? client) =>
+                        client == null ? "Please select a customer" : null,
+                  ),
+                  SizedBox(height: 10),
+                ],
+
+                if (isFieldActive('delivery_address')) ...[
+                  TextFormField(
+                    controller: _addressController,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'delivery address is required'
+                        : null,
+                    decoration: InputDecoration(
+                      labelText: "Delivery Address",
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
+
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2100),
-                    );
+                  const SizedBox(height: 10),
+                ],
 
-                    if (pickedDate != null) {
-                      String formattedDate = DateFormat(
-                        'dd-MM-yyyy',
-                      ).format(pickedDate);
+                // customer type                    ///
+                if (isFieldActive('party_type'))
+                  DropdownSearch<String>(
+                    key: ValueKey("Customer Type"),
+                    items: _customerTypeList,
+                    itemAsString: (String p) => p,
+                    selectedItem: selectedCustomerType,
+                    onChanged: (String? tap) {
+                      setState(() {
+                        selectedCustomerType = tap;
+                        showCashCustomerNameContractField =
+                            (tap == "Cash Customer");
 
-                      _orderdateController.text = formattedDate;
-                    }
-                  },
+                        if (!showCashCustomerNameContractField) {
+                          _cashCustomerContractController.clear();
+                          _cashCustomerNameController.clear();
+                        }
+                      });
+                    },
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.search,
+                          ), // এখানে search icon
+                          hintText: "--Select Customer Type--",
+                          labelText: "--Select Customer Type--",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
 
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please select a visit date";
-                    }
-                    return null;
-                  },
-                ),
+                      showSelectedItems: false,
+                    ),
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        labelText: "Customer Type",
+                        filled: true,
+                        fillColor: Colors.white,
+
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                    validator: (String? pur) =>
+                        pur == null ? "Please select a customer type" : null,
+                  ),
                 const SizedBox(height: 10),
 
-                TextFormField(
-                  controller: _deliverydateController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    isDense: true,
+                if (showCashCustomerNameContractField &&
+                    isFieldActive('cash_party')) ...[
+                  TextFormField(
+                    controller: _cashCustomerNameController,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'cash customer name is required'
+                        : null,
+                    decoration: InputDecoration(
+                      labelText: "Cash Customer Name",
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
 
-                    hintText: "Delivery Date",
-                    labelText: "Delivery Date",
-                    suffixIcon: const Icon(Icons.calendar_today_outlined),
-                    filled: true,
-                    fillColor: Colors.white,
-
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
-                    ),
 
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                  onTap: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime(2100),
-                    );
+                  const SizedBox(height: 10),
+                ],
 
-                    if (pickedDate != null) {
-                      String formattedDate = DateFormat(
-                        'dd-MM-yyyy',
-                      ).format(pickedDate);
+                if (showCashCustomerNameContractField &&
+                    isFieldActive('party_mobile')) ...[
+                  TextFormField(
+                    controller: _cashCustomerContractController,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'cash customer contract no is required'
+                        : null,
+                    decoration: InputDecoration(
+                      labelText: "Cash Customer Contact No",
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
 
-                      _deliverydateController.text = formattedDate;
-                    }
-                  },
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
 
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please select a visit date";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 10),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+
+                if (isFieldActive('employee_id')) ...[
+                  TextFormField(
+                    controller: _salebyController,
+                    readOnly: true,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'sales by is required'
+                        : null,
+                    decoration: InputDecoration(
+                      hintText: "Sales By",
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.grey.shade200,
+
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                      ),
+
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.white, width: 1.0),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
 
                 DropdownSearch<String>(
                   key: ValueKey("Payment mood"),
@@ -408,7 +852,6 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                       selectedPaymentMood = pur;
                       showShortCreditField = (pur == "Short Credit");
 
-                      // যদি অন্য কিছু সিলেক্ট করে তবে আগের লেখা ক্লিয়ার করে দেওয়া ভালো
                       if (!showShortCreditField) {
                         _noOfDaysController.clear();
                       }
@@ -474,47 +917,17 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   validator: (String? pur) =>
                       pur == null ? "Please select a payment mood" : null,
                 ),
-
-                if (showShortCreditField)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: TextFormField(
-                      controller: _noOfDaysController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "No. of Days",
-                        hintText: "Enter No. of Days",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                  ),
-
                 const SizedBox(height: 10),
 
-                DropdownSearch<ClientTypeModel>(
-                  items: _clientNameList,
-                  itemAsString: (ClientTypeModel t) => t.name.toString(),
-                  selectedItem: selectedClient,
-                  popupProps: PopupProps.menu(
-                    showSearchBox: true,
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search), // এখানে search icon
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    showSelectedItems: false,
-                  ),
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
+                if (showShortCreditField) ...[
+                  TextFormField(
+                    controller: _noOfDaysController,
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'no. of days is required'
+                        : null,
+                    decoration: InputDecoration(
+                      labelText: "No. of Days",
                       isDense: true,
-
-                      hintText: "Select Customer",
-                      labelText: "Customer",
                       filled: true,
                       fillColor: Colors.white,
 
@@ -552,76 +965,8 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                       ),
                     ),
                   ),
-                  onChanged: (ClientTypeModel? client) async {
-                    if (client != null) {
-                      setState(() {
-                        selectedClient = client;
-                      });
-                      await _fetchCustomerDetailsList(
-                        client.clientid.toString(),
-                      );
-                      if (selectedCustomerDetails != null) {
-                        setState(() {
-                          _addressController.text =
-                              selectedCustomerDetails!.presentAddress ??
-                              "No Address Found";
-                          _grossdiscountController.text =
-                              selectedCustomerDetails!.discount.toString();
-                        });
-                      }
-                    }
-                  },
-                  validator: (ClientTypeModel? client) =>
-                      client == null ? "Please select a customer" : null,
-                ),
-                SizedBox(height: 10),
-
-                TextFormField(
-                  controller: _addressController,
-                  validator: (v) => v == null || v.trim().isEmpty
-                      ? 'address is required'
-                      : null,
-                  decoration: InputDecoration(
-                    labelText: "Address",
-                    isDense: true,
-                    filled: true,
-                    fillColor: Colors.white,
-
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 10),
+                ],
 
                 if (isFieldActive("remarks")) ...[
                   TextFormField(
@@ -1681,6 +2026,8 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
 
   void _clearText() {
     _invoiceNoController.clear();
+    _cashCustomerContractController.clear();
+    _cashCustomerNameController.clear();
     _orderdateController.clear();
     _deliverydateController.clear();
     _paymentmodeController.clear();
