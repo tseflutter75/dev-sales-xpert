@@ -35,7 +35,6 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
   final _ownerNameController = TextEditingController();
   final _cashCustomerNameController = TextEditingController();
   final _cashCustomerContractController = TextEditingController();
-  final _salebyController = TextEditingController();
 
   // new
 
@@ -57,7 +56,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
 
   // colelction mood bank
   final _banknameController = TextEditingController();
-  final _accountDetailsController = TextEditingController();
+  final _bankAccountNameController = TextEditingController();
   final _chequeNoController = TextEditingController();
   final _chequedateController = TextEditingController();
 
@@ -78,6 +77,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
 
   List<Map<String, String>> salesList = [];
   bool inprogressssalesorderentry = false;
+  bool customerListFlag = false;
 
   File? image;
 
@@ -240,6 +240,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
     // ১. ডিফল্ট ভ্যালু সেট করা
     selectedCollectionMode = 'due';
     _collectionmodeController.text = 'due';
+    selectedCustomerType = 'Regular Customer';
   }
 
   @override
@@ -341,6 +342,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   const SizedBox(height: 10),
                 ],
 
+                // factory leave date
                 if (isFieldActive('factory_leave_date')) ...[
                   TextFormField(
                     controller: _factoryLeaveDateController,
@@ -400,7 +402,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                           'dd-MM-yyyy',
                         ).format(pickedDate);
 
-                        _deliverydateController.text = formattedDate;
+                        _factoryLeaveDateController.text = formattedDate;
                       }
                     },
 
@@ -486,7 +488,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   const SizedBox(height: 10),
                 ],
 
-                if (isFieldActive('party_id')) ...[
+                if (isFieldActive('party_id') && customerListFlag == false) ...[
                   DropdownSearch<ClientTypeModel>(
                     items: _clientNameList,
                     itemAsString: (ClientTypeModel t) => t.name.toString(),
@@ -636,6 +638,15 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                         if (!showCashCustomerNameContractField) {
                           _cashCustomerContractController.clear();
                           _cashCustomerNameController.clear();
+                        }
+
+                        // customer drop down show hide
+                        if (selectedCustomerType == "Cash Customer") {
+                          customerListFlag = true;
+                          setState(() {});
+                        } else {
+                          customerListFlag = false;
+                          setState(() {});
                         }
                       });
                     },
@@ -801,125 +812,86 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   const SizedBox(height: 10),
                 ],
 
-                if (isFieldActive('employee_id')) ...[
-                  TextFormField(
-                    controller: _salebyController,
-                    readOnly: true,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'sales by is required'
-                        : null,
-                    decoration: InputDecoration(
-                      hintText: "Sales By",
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.grey.shade200,
+                if (isFieldActive('payment_type')) ...[
+                  DropdownSearch<String>(
+                    key: ValueKey("Payment mood"),
+                    items: _payementMoodList,
+                    itemAsString: (String p) => p,
+                    selectedItem: selectedPaymentMood,
+                    onChanged: (String? pur) {
+                      setState(() {
+                        selectedPaymentMood = pur;
+                        showShortCreditField = (pur == "Short Credit");
 
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                        if (!showShortCreditField) {
+                          _noOfDaysController.clear();
+                        }
+                      });
+                    },
+                    popupProps: PopupProps.menu(
+                      showSearchBox: true,
+                      searchFieldProps: TextFieldProps(
+                        decoration: InputDecoration(
+                          prefixIcon: const Icon(
+                            Icons.search,
+                          ), // এখানে search icon
+                          hintText: "Search payment mood..",
+                          labelText: "Select Payment Mood",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
 
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.white, width: 1.0),
-                      ),
+                      showSelectedItems: false,
+                    ),
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                        labelText: "Payment Mood",
+                        filled: true,
+                        fillColor: Colors.white,
 
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.white, width: 1.0),
-                      ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
 
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: Colors.white, width: 1.0),
-                      ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
+                    validator: (String? pur) =>
+                        pur == null ? "Please select a payment mood" : null,
                   ),
                   const SizedBox(height: 10),
                 ],
 
-                DropdownSearch<String>(
-                  key: ValueKey("Payment mood"),
-                  items: _payementMoodList,
-                  itemAsString: (String p) => p,
-                  selectedItem: selectedPaymentMood,
-                  onChanged: (String? pur) {
-                    setState(() {
-                      selectedPaymentMood = pur;
-                      showShortCreditField = (pur == "Short Credit");
-
-                      if (!showShortCreditField) {
-                        _noOfDaysController.clear();
-                      }
-                    });
-                  },
-                  popupProps: PopupProps.menu(
-                    showSearchBox: true,
-                    searchFieldProps: TextFieldProps(
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(
-                          Icons.search,
-                        ), // এখানে search icon
-                        hintText: "Search payment mood..",
-                        labelText: "Select Payment Mood",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-
-                    showSelectedItems: false,
-                  ),
-                  dropdownDecoratorProps: DropDownDecoratorProps(
-                    dropdownSearchDecoration: InputDecoration(
-                      labelText: "Payment Mood",
-                      filled: true,
-                      fillColor: Colors.white,
-
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
-                        ),
-                      ),
-
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
-                        ),
-                      ),
-
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
-                        ),
-                      ),
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                  validator: (String? pur) =>
-                      pur == null ? "Please select a payment mood" : null,
-                ),
-                const SizedBox(height: 10),
-
-                if (showShortCreditField) ...[
+                if (showShortCreditField && isFieldActive('total_days')) ...[
                   TextFormField(
                     controller: _noOfDaysController,
                     validator: (v) => v == null || v.trim().isEmpty
@@ -1212,63 +1184,66 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   const SizedBox(height: 10),
                 ],
 
-                // // collection mood
-                DropdownButtonFormField<String>(
-                  value: selectedCollectionMode,
-                  items: collectionModes
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCollectionMode = value;
-                      _collectionmodeController.text = value ?? '';
-                    });
-                  },
-                  validator: (value) =>
-                      value == null ? 'collection mode is required' : null,
-                  decoration: InputDecoration(
-                    labelText: 'Collection Mode',
-                    isDense: true,
-                    filled: true,
-                    fillColor: Colors.white,
+                // collection mood
+                if (isFieldActive('collection_mode')) ...[
+                  DropdownButtonFormField<String>(
+                    value: selectedCollectionMode,
+                    items: collectionModes
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCollectionMode = value;
+                        _collectionmodeController.text = value ?? '';
+                      });
+                    },
+                    validator: (value) =>
+                        value == null ? 'collection mode is required' : null,
+                    decoration: InputDecoration(
+                      labelText: 'Collection Mode',
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
 
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
-                    ),
 
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                ],
 
-                if (selectedCollectionMode == 'bank') ...[
+                if (selectedCollectionMode == 'bank' &&
+                    isFieldActive('bank_name')) ...[
                   // if mood bank
                   TextFormField(
                     controller: _banknameController,
@@ -1316,53 +1291,54 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (isFieldActive('acc_name')) ...[
+                    TextFormField(
+                      controller: _bankAccountNameController,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'account details is required'
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: "Bank Account Name",
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
 
-                  TextFormField(
-                    controller: _accountDetailsController,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'account details is required'
-                        : null,
-                    decoration: InputDecoration(
-                      labelText: "Account Details",
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.white,
-
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
                         ),
-                      ),
 
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                  ],
 
                   TextFormField(
                     controller: _chequeNoController,
@@ -1478,7 +1454,8 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
-                if (selectedCollectionMode == 'bkash') ...[
+                if (selectedCollectionMode == 'bkash' &&
+                    isFieldActive('mobile')) ...[
                   // if mood BKASH
                   TextFormField(
                     controller: _bikashmobilenumberController,
@@ -1526,55 +1503,56 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (isFieldActive('trx_id'))
+                    TextFormField(
+                      controller: _transactionIdController,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'transaction id is required'
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: "Transaction Id",
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
 
-                  TextFormField(
-                    controller: _transactionIdController,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'transaction id is required'
-                        : null,
-                    decoration: InputDecoration(
-                      labelText: "Transaction Id",
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.white,
-
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
                         ),
-                      ),
 
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 10),
                 ],
-                if (selectedCollectionMode == 'nagad') ...[
+                if (selectedCollectionMode == 'nagad' &&
+                    isFieldActive('mobile')) ...[
                   // if mood NAGAD
                   TextFormField(
                     controller: _nagadmobilenumberController,
@@ -1622,55 +1600,56 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (isFieldActive('trx_id'))
+                    TextFormField(
+                      controller: _transactionIdController,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'transaction id is required'
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: "Transaction Id",
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
 
-                  TextFormField(
-                    controller: _transactionIdController,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'transaction id is required'
-                        : null,
-                    decoration: InputDecoration(
-                      labelText: "Transaction Id",
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.white,
-
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
                         ),
-                      ),
 
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(height: 10),
                 ],
-                if (selectedCollectionMode == 'rocket') ...[
+                if (selectedCollectionMode == 'rocket' &&
+                    isFieldActive('mobile')) ...[
                   // if mood Rocket
                   TextFormField(
                     controller: _rocketmobilenumberController,
@@ -1718,14 +1697,61 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
+                  if (isFieldActive('trx_id'))
+                    TextFormField(
+                      controller: _transactionIdController,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'transaction id is required'
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: "Transaction Id",
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
 
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
+
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 10),
+                ],
+                if (isFieldActive('collection_amount')) ...[
                   TextFormField(
-                    controller: _transactionIdController,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'transaction id is required'
-                        : null,
+                    controller: _collectionamountController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      labelText: "Transaction Id",
+                      labelText: "Collection Amount",
+                      hintText: "Collection Amount",
                       isDense: true,
                       filled: true,
                       fillColor: Colors.white,
@@ -1764,102 +1790,58 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+
+                  SizedBox(height: 10),
                 ],
 
-                TextFormField(
-                  controller: _collectionamountController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Collection Amount",
-                    hintText: "Collection Amount",
-                    isDense: true,
-                    filled: true,
-                    fillColor: Colors.white,
+                if (isFieldActive('gross_discount')) ...[
+                  TextFormField(
+                    controller: _grossdiscountController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      labelText: "Gross Discount (%)",
+                      hintText: "Gross Discount (%)",
+                      isDense: true,
+                      filled: true,
+                      fillColor: Colors.white,
 
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
                       ),
-                    ),
 
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
                       ),
-                    ),
 
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
-                ),
 
-                SizedBox(height: 10),
-
-                TextFormField(
-                  controller: _grossdiscountController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: "Gross Discount (%)",
-                    hintText: "Gross Discount (%)",
-                    isDense: true,
-                    filled: true,
-                    fillColor: Colors.white,
-
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 10,
-                    ),
-
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1.0,
-                      ),
-                    ),
-
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 10),
+                  SizedBox(height: 10),
+                ],
 
                 Visibility(
                   visible: inprogressssalesorderentry == false,
@@ -1915,6 +1897,12 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
     return 0;
   }
 
+  String getCustomerType(String? type) {
+    if (type == "Cash Customer") return "cash";
+    if (type == "Regular Customer") return "regular";
+    return " ";
+  }
+
   Future<void> _SalesOrderEntry() async {
     if (inprogressssalesorderentry) return;
 
@@ -1927,12 +1915,30 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
       "employee_id": AuthController.userModel!.empoloyeeid, // sales by
       "sale_date": _orderdateController.text.trim(),
       "receive_date": _deliverydateController.text.trim(),
-      "payment_type": getPaymentId(selectedPaymentMood),
+      "factory_leave_date": _factoryLeaveDateController.text.trim(),
       "delivery_address": _addressController.text.trim(),
-      "remarks": _remarksController.text.trim(),
+
+      // customer type
+      "party_type": getCustomerType(selectedCustomerType),
+      "cash_party": showCashCustomerNameContractField
+          ? _cashCustomerNameController.text.trim()
+          : null,
+      "party_mobile": showCashCustomerNameContractField
+          ? _cashCustomerContractController.text.trim()
+          : null,
+
+      //  payment mood
+      "payment_type": getPaymentId(selectedPaymentMood),
       "total_days": showShortCreditField
           ? _noOfDaysController.text.trim()
           : null,
+
+      "remarks": _remarksController.text.trim(),
+      "surface": _surfaceController.text.trim(),
+      "owner_name": _ownerNameController.text.trim(),
+      "nid_bin": _customerNIDController.text.trim(),
+
+      "total_weight": _totalwightkgController.text.trim(),
 
       // amount
       "gross_discount": _grossdiscountController.text.trim(),
@@ -1946,7 +1952,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
     if (selectedCollectionMode == 'bank') {
       requestBody.addAll({
         "bank_name": _banknameController.text.trim(),
-        "acc_name": _accountDetailsController.text.trim(),
+        "acc_name": _bankAccountNameController.text.trim(),
         "cheque_no": _chequeNoController.text.trim(),
         "cheque_date": _chequedateController.text.trim(),
       });
@@ -1970,14 +1976,14 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
       requestBody["party_id"] = selectedClient!.clientid;
     }
 
+    // ================= PRINT REQUEST BODY =================
+    print("REQUEST BODY: $requestBody");
+
     ApiResponse response = await NetworkCaller.postRequest(
       url: Urls.salesorderEntryUrl,
       body: requestBody,
       token: AuthController.accessToken,
     );
-
-    print(response.responseData);
-    print(response.responseCode);
 
     if (response.isSuccess && response.responseData["success"] == true) {
       _clearText();
@@ -2033,6 +2039,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
     _paymentmodeController.clear();
     _customerController.clear();
     _salesbyController.clear();
+    _ownerNameController.clear();
     _addressController.clear();
     _orderStatusController.clear();
     _remarksController.clear();
@@ -2046,6 +2053,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
     _paymentmodeController.dispose();
     _customerController.dispose();
     _salesbyController.dispose();
+    _ownerNameController.dispose();
     _addressController.dispose();
     _orderStatusController.dispose();
     _remarksController.dispose();

@@ -51,7 +51,7 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
 
   // colelction mood bank
   final _banknameController = TextEditingController();
-  final _accountDetailsController = TextEditingController();
+  final _bankAccountNameController = TextEditingController();
   final _chequeNoController = TextEditingController();
   final _chequedateController = TextEditingController();
 
@@ -181,7 +181,7 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
     /// ---------- BANK ----------
     if (selectedCollectionMode == 'bank') {
       _banknameController.text = widget.item.bankName ?? "";
-      _accountDetailsController.text = widget.item.accName ?? "";
+      _bankAccountNameController.text = widget.item.accName ?? "";
       _chequeNoController.text = widget.item.chequeNo ?? "";
       _chequedateController.text = myFormat.format(
         serverFormat.parse(widget.item.chequeDate!),
@@ -920,12 +920,12 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
                   const SizedBox(height: 10),
 
                   TextFormField(
-                    controller: _accountDetailsController,
+                    controller: _bankAccountNameController,
                     validator: (v) => v == null || v.trim().isEmpty
                         ? 'account details is required'
                         : null,
                     decoration: InputDecoration(
-                      labelText: "Account Details",
+                      labelText: "Bank Account Name",
                       isDense: true,
                       filled: true,
                       fillColor: Colors.white,
@@ -1552,7 +1552,7 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
     if (selectedCollectionMode == 'bank') {
       requestBody.addAll({
         "bank_name": _banknameController.text.trim(),
-        "acc_name": _accountDetailsController.text.trim(),
+        "acc_name": _bankAccountNameController.text.trim(),
         "cheque_no": _chequeNoController.text.trim(),
         "cheque_date": _chequedateController.text.trim(),
       });

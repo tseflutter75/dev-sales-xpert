@@ -63,7 +63,7 @@ class _SalesOrderPendingCardState extends State<SalesOrderPendingCard> {
 
       for (var itemJson in itemsList) {
         final Map<String, dynamic> combinedMap = {
-          ...saleJson, // সেলের সব ডেটা ঢুকলো
+          ...saleJson,
           ...itemJson, // আইটেমের সব ডেটা ঢুকলো এবং common keys (যেমন id) ওভাররাইট হলো
         };
 
@@ -252,7 +252,11 @@ class _SalesOrderPendingCardState extends State<SalesOrderPendingCard> {
                 InkWell(
                   onTap: () async {
                     var updated = await Get.to(
-                      () => SalesOrderUpdateScreen(item: item, index: item.id),
+                      () => SalesOrderUpdateScreen(
+                        item: item,
+                        index: item.id,
+                        modelName: "GmSale",
+                      ),
                     );
                     if (updated == true) {
                       widget.onRefreshSaleEditEntryback();
