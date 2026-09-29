@@ -157,10 +157,7 @@ class _SalesOrderViewScreenState extends State<SalesOrderViewScreen>
                               ), // Soft shadow color
                               spreadRadius: 2, // How far the shadow spreads
                               blurRadius: 4, // How soft the shadow looks
-                              offset: const Offset(
-                                0,
-                                4,
-                              ), // Shifts shadow down (X, Y) to look raised
+                              offset: const Offset(0, 4),
                             ),
                           ],
                         ),

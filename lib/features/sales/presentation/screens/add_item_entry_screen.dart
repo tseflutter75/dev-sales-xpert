@@ -55,6 +55,54 @@ class _AddItemEntryScreenState extends State<AddItemEntryScreen> {
 
   SalesItemModel? saleid;
 
+  // from structure value
+  final List<FormFilterField> fromFilterFeildList = [];
+  FormFilterField? selectedFromFilterFeild;
+  Future<void> _fetchFromFilterFeildList() async {
+    ApiResponse response = await NetworkCaller.getRequest(
+      url: Urls.fromValueUrl(widget.modelName.toString()),
+      token: AuthController.accessToken,
+    );
+    fromFilterFeildList.clear();
+    if (!mounted) return;
+    if (response.isSuccess) {
+      final fromFilterFeildData = response.responseData;
+      for (Map<String, dynamic> fromFilterFeildJson
+          in fromFilterFeildData['data']['form_filter_fields']) {
+        final fromFilterFeildModel = FormFilterField.fromJson(
+          fromFilterFeildJson,
+        );
+        fromFilterFeildList.add(fromFilterFeildModel);
+      }
+
+      setState(() {});
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+          content: Center(
+            child: Text(
+              response.errorMessage,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  bool isFieldActive(String column) {
+    return fromFilterFeildList.any(
+      (f) => f.column == column && f.active == true,
+    );
+  }
+
   // brand list api
   final List<ItemBrandNameModel> _itemBrandList = [];
   ItemBrandNameModel? selectedBrandName;
@@ -336,54 +384,6 @@ class _AddItemEntryScreenState extends State<AddItemEntryScreen> {
     }
   }
 
-  // from value
-  final List<FormFilterField> fromFilterFeildList = [];
-  FormFilterField? selectedFromFilterFeild;
-  Future<void> _fetchFromFilterFeildList() async {
-    ApiResponse response = await NetworkCaller.getRequest(
-      url: Urls.fromValueUrl(widget.modelName.toString()),
-      token: AuthController.accessToken,
-    );
-    fromFilterFeildList.clear();
-    if (!mounted) return;
-    if (response.isSuccess) {
-      final fromFilterFeildData = response.responseData;
-      for (Map<String, dynamic> fromFilterFeildJson
-          in fromFilterFeildData['data']['form_filter_fields']) {
-        final fromFilterFeildModel = FormFilterField.fromJson(
-          fromFilterFeildJson,
-        );
-        fromFilterFeildList.add(fromFilterFeildModel);
-      }
-
-      setState(() {});
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.red,
-          content: Center(
-            child: Text(
-              response.errorMessage,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  bool isFieldActive(String column) {
-    return fromFilterFeildList.any(
-      (f) => f.column == column && f.active == true,
-    );
-  }
-
   SalesItemModel? saleData;
   final List<SalesItemModel> _saleorderList = [];
   bool inprogressssalesitem = false;
@@ -574,7 +574,7 @@ class _AddItemEntryScreenState extends State<AddItemEntryScreen> {
                       showSearchBox: true,
                       searchFieldProps: TextFieldProps(
                         decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search), // এখানে search icon
+                          prefixIcon: Icon(Icons.search), //
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

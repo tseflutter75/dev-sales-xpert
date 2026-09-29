@@ -4,8 +4,7 @@ class SaleHistoryModel {
   String? saleDate;
   String? partyName;
   String? companyName;
-  num?
-  totalAmount; // int বা double উভয়ই সাপোর্ট করার জন্য num ব্যবহার করা হয়েছে
+  num? totalAmount;
   num? discount;
   num? grandTotal;
   num? collectionAmount;

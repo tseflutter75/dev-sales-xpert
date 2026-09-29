@@ -502,6 +502,7 @@ class _SalesOrderPendingCardState extends State<SalesOrderPendingCard> {
                                         item: items,
                                         saleitemid: items.Iid,
                                         saleid: item.id, // sale item id
+                                        modelName: "GmSale",
                                       ),
                                     );
 

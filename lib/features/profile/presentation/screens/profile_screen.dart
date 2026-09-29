@@ -35,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // 👤 Profile section
+              //  Profile section
               Row(
                 children: [
                   // --- Instagram Style Gradient Frame ---

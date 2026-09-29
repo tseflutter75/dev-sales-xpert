@@ -35,13 +35,11 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
   final _ownerNameController = TextEditingController();
   final _cashCustomerNameController = TextEditingController();
   final _cashCustomerContractController = TextEditingController();
-
-  // new
+  final _factoryLeaveDateController = TextEditingController();
 
   final _invoiceNoController = TextEditingController();
   final _orderdateController = TextEditingController();
   final _deliverydateController = TextEditingController();
-  final _factoryLeaveDateController = TextEditingController();
   final _paymentmodeController = TextEditingController();
   final _customerController = TextEditingController();
   final _salesbyController = TextEditingController();
@@ -73,11 +71,10 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
 
   bool showShortCreditField = false;
   bool showCashCustomerNameContractField = false;
-  // bool showCashCustomerContactNoField = false;
+  bool customerListFlag = false;
 
   List<Map<String, String>> salesList = [];
   bool inprogressssalesorderentry = false;
-  bool customerListFlag = false;
 
   File? image;
 
@@ -268,7 +265,6 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
             child: Column(
               children: [
                 /// start
-                ///
                 if (isFieldActive('sale_date')) ...[
                   TextFormField(
                     controller: _orderdateController,
@@ -1037,6 +1033,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
+
                 if (isFieldActive("owner_name")) ...[
                   TextFormField(
                     controller: _ownerNameController,
@@ -1135,6 +1132,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                   ),
                   const SizedBox(height: 10),
                 ],
+
                 if (isFieldActive("total_weight")) ...[
                   TextFormField(
                     controller: _totalwightkgController,
@@ -1340,120 +1338,124 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     const SizedBox(height: 10),
                   ],
 
-                  TextFormField(
-                    controller: _chequeNoController,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'cheque no is required'
-                        : null,
-                    decoration: InputDecoration(
-                      labelText: "Cheque No",
-                      isDense: true,
-                      filled: true,
-                      fillColor: Colors.white,
+                  if (isFieldActive('cheque_no')) ...[
+                    TextFormField(
+                      controller: _chequeNoController,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'cheque no is required'
+                          : null,
+                      decoration: InputDecoration(
+                        labelText: "Cheque No",
+                        isDense: true,
+                        filled: true,
+                        fillColor: Colors.white,
 
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
                         ),
-                      ),
 
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
 
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                  ],
+                  if (isFieldActive('cheque_date')) ...[
+                    TextFormField(
+                      controller: _chequedateController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        isDense: true,
 
-                  TextFormField(
-                    controller: _chequedateController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      isDense: true,
+                        hintText: "Cheque Date",
+                        suffixIcon: const Icon(Icons.calendar_today_outlined),
+                        filled: true,
+                        fillColor: Colors.white,
 
-                      hintText: "Cheque Date",
-                      suffixIcon: const Icon(Icons.calendar_today_outlined),
-                      filled: true,
-                      fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
 
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
 
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1.0,
+                          ),
+                        ),
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
-                        ),
-                      ),
-
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1.0,
-                        ),
-                      ),
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                      onTap: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime(2100),
+                        );
+                        if (pickedDate != null) {
+                          String formattedDate = DateFormat(
+                            'dd-MM-yyyy',
+                          ).format(pickedDate);
+                          _chequedateController.text = formattedDate;
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please select a cheque date";
+                        }
+                        return null;
+                      },
                     ),
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(2020),
-                        lastDate: DateTime(2100),
-                      );
-                      if (pickedDate != null) {
-                        String formattedDate = DateFormat(
-                          'dd-MM-yyyy',
-                        ).format(pickedDate);
-                        _chequedateController.text = formattedDate;
-                      }
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please select a cheque date";
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                  ],
                 ],
+
                 if (selectedCollectionMode == 'bkash' &&
                     isFieldActive('mobile')) ...[
                   // if mood BKASH
@@ -1551,6 +1553,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   const SizedBox(height: 10),
                 ],
+
                 if (selectedCollectionMode == 'nagad' &&
                     isFieldActive('mobile')) ...[
                   // if mood NAGAD
@@ -1745,6 +1748,7 @@ class _SalesOrderEntryScreenState extends State<SalesOrderEntryScreen> {
                     ),
                   const SizedBox(height: 10),
                 ],
+
                 if (isFieldActive('collection_amount')) ...[
                   TextFormField(
                     controller: _collectionamountController,

@@ -53,6 +53,52 @@ class _AddItemUpdateScreenState extends State<AddItemUpdateScreen> {
 
   File? image;
 
+  // from structure value
+  final List<FormFilterField> fromFilterFeildList = [];
+  FormFilterField? selectedFromFilterFeild;
+  Future<void> _fetchFromFilterFeildList() async {
+    ApiResponse response = await NetworkCaller.getRequest(
+      url: Urls.fromValueUrl(widget.modelName.toString()),
+      token: AuthController.accessToken,
+    );
+    fromFilterFeildList.clear();
+    if (response.isSuccess) {
+      final fromFilterFeildData = response.responseData;
+      for (Map<String, dynamic> fromFilterFeildJson
+          in fromFilterFeildData['data']['form_filter_fields']) {
+        final fromFilterFeildModel = FormFilterField.fromJson(
+          fromFilterFeildJson,
+        );
+        fromFilterFeildList.add(fromFilterFeildModel);
+      }
+      setState(() {});
+    } else {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+          content: Center(
+            child: Text(
+              response.errorMessage,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  bool isFieldActive(String column) {
+    return fromFilterFeildList.any(
+      (f) => f.column == column && f.active == true,
+    );
+  }
+
   // brand list api
   final List<ItemBrandNameModel> _itemBrandList = [];
   ItemBrandNameModel? selectedBrandName;
@@ -189,7 +235,6 @@ class _AddItemUpdateScreenState extends State<AddItemUpdateScreen> {
     if (response.isSuccess) {
       final data = response.responseData;
 
-      // যদি API wrapper থাকে: { "success": true, "data": {...} }
       if (data != null && data['data'] != null) {
         selectedItemDetails = ItemDetailsModel.fromJson(data['data']);
         setState(() {});
@@ -330,52 +375,6 @@ class _AddItemUpdateScreenState extends State<AddItemUpdateScreen> {
         ),
       );
     }
-  }
-
-  // from value
-  final List<FormFilterField> fromFilterFeildList = [];
-  FormFilterField? selectedFromFilterFeild;
-  Future<void> _fetchFromFilterFeildList() async {
-    ApiResponse response = await NetworkCaller.getRequest(
-      url: Urls.fromValueUrl(widget.modelName.toString()),
-      token: AuthController.accessToken,
-    );
-    fromFilterFeildList.clear();
-    if (response.isSuccess) {
-      final fromFilterFeildData = response.responseData;
-      for (Map<String, dynamic> fromFilterFeildJson
-          in fromFilterFeildData['data']['form_filter_fields']) {
-        final fromFilterFeildModel = FormFilterField.fromJson(
-          fromFilterFeildJson,
-        );
-        fromFilterFeildList.add(fromFilterFeildModel);
-      }
-      setState(() {});
-    } else {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 2),
-          backgroundColor: Colors.red,
-          content: Center(
-            child: Text(
-              response.errorMessage,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  bool isFieldActive(String column) {
-    return fromFilterFeildList.any(
-      (f) => f.column == column && f.active == true,
-    );
   }
 
   Future<void> initializeItemData() async {
@@ -1455,7 +1454,7 @@ class _AddItemUpdateScreenState extends State<AddItemUpdateScreen> {
     if (response.isSuccess && response.responseData["success"] == true) {
       _clearText();
 
-      print("readddyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+      // print("readddyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
       print(widget.item.id.toString());
       print(widget.saleitemid.toString());
       print(selectedItemFilter!.id.toString());

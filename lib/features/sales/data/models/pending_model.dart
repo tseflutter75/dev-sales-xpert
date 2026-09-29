@@ -2,8 +2,12 @@ class PendingModel {
   int? id;
   String? orderNo;
   String? saleDate;
+  String? factoryLeaveDate;
   String? receiveDate;
   String? deliveryAddress;
+  String? customerType;
+  String? cashCustomerName;
+  String? cashCustomerNumber;
   String? remarks;
   int? paymentType;
   String? paymentTypeText;
@@ -31,6 +35,7 @@ class PendingModel {
     this.id,
     this.orderNo,
     this.saleDate,
+    this.factoryLeaveDate,
     this.receiveDate,
     this.deliveryAddress,
     this.remarks,
@@ -62,6 +67,7 @@ class PendingModel {
       id: json['id'] ?? 0,
       orderNo: json['order_no'] ?? "",
       saleDate: json['sale_date'] ?? "",
+      factoryLeaveDate: json['factory_leave_date'] ?? "",
       receiveDate: json['receive_date'] ?? "",
       deliveryAddress: json['delivery_address'],
       remarks: json['remarks'],
