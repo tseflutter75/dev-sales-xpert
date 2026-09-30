@@ -325,7 +325,7 @@ class _SalesOrderPendingCardState extends State<SalesOrderPendingCard> {
             buildInfoRow("Order Status", item.statusText ?? ""),
 
             // FOR SALE ITEM API ANOTHER API
-            buildInfoRow("Discount", "${saleData?.grossDiscount.toString()} %"),
+            buildInfoRow("Discount", "${item.grossDiscount.toString()} %"),
 
             SizedBox(height: 10),
 

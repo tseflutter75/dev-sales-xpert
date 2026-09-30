@@ -9,6 +9,10 @@ class PendingModel {
   String? cashCustomerName;
   String? cashCustomerNumber;
   String? remarks;
+  String? surface;
+  String? ownerName;
+  String? customerNid;
+  int? totalWeight;
   int? paymentType;
   String? paymentTypeText;
   int? totalDays;
@@ -38,7 +42,14 @@ class PendingModel {
     this.factoryLeaveDate,
     this.receiveDate,
     this.deliveryAddress,
+    this.customerType,
+    this.cashCustomerName,
+    this.cashCustomerNumber,
     this.remarks,
+    this.surface,
+    this.ownerName,
+    this.customerNid,
+    this.totalWeight,
     this.paymentType,
     this.paymentTypeText,
     this.totalDays,
@@ -70,7 +81,14 @@ class PendingModel {
       factoryLeaveDate: json['factory_leave_date'] ?? "",
       receiveDate: json['receive_date'] ?? "",
       deliveryAddress: json['delivery_address'],
-      remarks: json['remarks'],
+      customerType: json['party_type'] ?? "",
+      cashCustomerName: json['cash_party'] ?? "",
+      cashCustomerNumber: json['party_mobile'] ?? "",
+      remarks: json['remarks'] ?? "",
+      surface: json['surface'] ?? "",
+      ownerName: json['owner_name'] ?? "",
+      customerNid: json['nid_bin'] ?? "",
+      totalWeight: json['total_weight'] ?? 0,
       paymentType: json['payment_type'],
       paymentTypeText: json['payment_type_text'],
       totalDays: json['total_days'],

@@ -3,7 +3,6 @@ import 'package:devsalesxpert/features/sales/data/models/from_filter_feild.dart'
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:intl/intl.dart';
 import 'package:devsalesxpert/app/urls.dart';
 import 'package:devsalesxpert/core/services/network_caller.dart';
@@ -86,7 +85,10 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
   // from value
   final List<FormFilterField> fromFilterFeildList = [];
   FormFilterField? selectedFromFilterFeild;
+  bool fromStructureInProgress = false;
   Future<void> _fetchFromFilterFeildList() async {
+    fromStructureInProgress = true;
+    setState(() {});
     ApiResponse response = await NetworkCaller.getRequest(
       url: Urls.fromValueUrl(widget.modelName.toString()),
       token: AuthController.accessToken,
@@ -102,8 +104,6 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
         );
         fromFilterFeildList.add(fromFilterFeildModel);
       }
-
-      setState(() {});
     } else {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,6 +123,8 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
         ),
       );
     }
+    fromStructureInProgress = false;
+    setState(() {});
   }
 
   bool isFieldActive(String column) {
@@ -134,12 +136,15 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
   // client get api
   final List<ClientTypeModel> _clientNameList = [];
   ClientTypeModel? selectedClient;
+  bool clintInProgresss = false;
   Future<void> _fetchclintList() async {
+    clintInProgresss = true;
+    setState(() {});
     ApiResponse response = await NetworkCaller.getRequest(
       url: Urls.clientfromUrl,
       token: AuthController.accessToken,
     );
-
+    if (!mounted) return;
     if (response.isSuccess) {
       final clienttypeData = response.responseData;
       for (Map<String, dynamic> clienttypeJson in clienttypeData['data']) {
@@ -157,7 +162,6 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
           selectedClient = null;
         }
       }
-      setState(() {});
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -176,6 +180,8 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
         ),
       );
     }
+    clintInProgresss = false;
+    setState(() {});
   }
 
   // payment mood get api
@@ -224,20 +230,27 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
 
     _addressController.text = widget.item.deliveryAddress ?? "";
     _remarksController.text = widget.item.remarks ?? "";
+    _surfaceController.text = widget.item.surface.toString();
+    _ownerNameController.text = widget.item.ownerName.toString();
+    _customerNIDController.text = widget.item.customerNid.toString();
+    _totalwightkgController.text = widget.item.totalWeight.toString();
 
     String? existingPayment = widget.item.paymentTypeText;
-    String? existingType = widget.item.paymentTypeText;
+    String? existingType = widget.item.customerType;
 
     // customer type
-    if (_customerTypeList.contains(existingType)) {
-      selectedCustomerType = existingType;
-      showCashCustomerNameContractField = (existingType == "cash");
-      if (showCashCustomerNameContractField) {
-        _cashCustomerNameController.text =
-            widget.item.cashCustomerName?.toString() ?? "";
-        _cashCustomerContractController.text =
-            widget.item.cashCustomerNumber?.toString() ?? "";
-      }
+    if (existingType == "cash") {
+      selectedCustomerType = "Cash Customer";
+      showCashCustomerNameContractField = true;
+
+      _cashCustomerNameController.text =
+          widget.item.cashCustomerName?.toString() ?? "";
+
+      _cashCustomerContractController.text =
+          widget.item.cashCustomerNumber?.toString() ?? "";
+    } else if (existingType == "regular") {
+      selectedCustomerType = "Regular Customer";
+      showCashCustomerNameContractField = false;
     }
 
     // payment mood
@@ -284,9 +297,6 @@ class _SalesOrderUpdateScreenState extends State<SalesOrderUpdateScreen> {
       _rocketmobilenumberController.text = widget.item.mobile ?? "";
       _transactionIdController.text = widget.item.trxId ?? "";
     }
-
-    print("heloooooooooooooooooooooooooooooooo");
-    print(widget.item.totalDays?.toString());
 
     _fetchclintList();
   }

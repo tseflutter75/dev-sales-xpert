@@ -1037,7 +1037,6 @@ class _AddItemEntryScreenState extends State<AddItemEntryScreen> {
                         await _additemEntry();
                       }
                       await fetchSaleItemView();
-                      setState(() {});
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.resolveWith<Color>((

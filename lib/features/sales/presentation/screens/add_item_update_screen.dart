@@ -1448,17 +1448,9 @@ class _AddItemUpdateScreenState extends State<AddItemUpdateScreen> {
       token: AuthController.accessToken,
     );
 
-    print(response.responseData);
-    print(response.responseCode);
+    if (!mounted) return;
 
     if (response.isSuccess && response.responseData["success"] == true) {
-      _clearText();
-
-      // print("readddyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
-      print(widget.item.id.toString());
-      print(widget.saleitemid.toString());
-      print(selectedItemFilter!.id.toString());
-
       Get.back(result: true);
 
       // ignore: use_build_context_synchronously
